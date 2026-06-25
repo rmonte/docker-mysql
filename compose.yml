@@ -1,0 +1,30 @@
+services:
+  mysql:
+    image: mysql:9.7
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./my.cnf:/etc/mysql/conf.d/custom.cnf:ro
+      - ./scripts:/scripts:ro
+      - mysql_logs:/var/log/mysql
+    expose:
+      - "3306"
+    networks:
+      - infra
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mysql_data:
+  mysql_logs:
+
+networks:
+  infra:
+    external: true
