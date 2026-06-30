@@ -8,7 +8,6 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./my.cnf:/etc/mysql/conf.d/custom.cnf:ro
-      - ./scripts:/scripts:ro
       - mysql_logs:/var/log/mysql
     expose:
       - "3306"

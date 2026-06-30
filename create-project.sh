@@ -2,8 +2,8 @@
 set -e
 
 if [ -z "$1" ]; then
-  echo "Uso: ./scripts/create-project.sh <nome_do_projeto>"
-  echo "Exemplo: ./scripts/create-project.sh meu_projeto"
+  echo "Uso: ./create-project.sh <nome_do_projeto>"
+  echo "Exemplo: ./create-project.sh meu_projeto"
   exit 1
 fi
 
@@ -18,9 +18,9 @@ if [ -z "$DB_PASSWORD" ]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "${SCRIPT_DIR}/../.env"
+source "${SCRIPT_DIR}/.env"
 
-docker compose -f "${SCRIPT_DIR}/../compose.yml" exec -T \
+docker compose -f "${SCRIPT_DIR}/compose.yml" exec -T \
   -e MYSQL_PWD="${MYSQL_ROOT_PASSWORD}" mysql \
   mysql -u root <<EOF
 CREATE DATABASE IF NOT EXISTS \`${PROJECT}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
