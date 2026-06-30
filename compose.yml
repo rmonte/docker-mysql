@@ -6,9 +6,9 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./data:/var/lib/mysql
       - ./my.cnf:/etc/mysql/conf.d/custom.cnf:ro
-      - mysql_logs:/var/log/mysql
+      - ./logs:/var/log/mysql
     expose:
       - "3306"
     networks:
@@ -26,10 +26,6 @@ services:
           # Regra: innodb_buffer_pool_size + ~256M de overhead de conexões/buffers
           memory: 512M
           cpus: "2"
-
-volumes:
-  mysql_data:
-  mysql_logs:
 
 networks:
   infra:
