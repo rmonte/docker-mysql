@@ -20,6 +20,13 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    deploy:
+      resources:
+        limits:
+          # Ajuste conforme a RAM do servidor.
+          # Regra: innodb_buffer_pool_size + ~256M de overhead de conexões/buffers
+          memory: 512M
+          cpus: "2"
 
 volumes:
   mysql_data:
