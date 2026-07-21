@@ -13,6 +13,7 @@ docker-mysql/
 ├── init/                  # scripts SQL executados só na primeira inicialização
 │   └── 01-slow-log-retention.sql
 ├── compose.yml
+├── compose.dev.yml       # override opcional p/ dev em Windows/WSL2 (ver seção abaixo)
 ├── my.cnf
 ├── create-project.sh      # cria banco e usuário para um novo projeto Laravel
 ├── backup.sh              # gera dump completo + por banco, com verificação de integridade
@@ -108,13 +109,27 @@ Não há arquivos de log em disco (sem bind mount, sem logrotate, sem depender d
 
 ## Acesso remoto
 
-A porta 3306 não é exposta publicamente. Para conectar via MySQL Workbench ou TablePlus, use um túnel SSH a partir da sua máquina local:
+A porta 3306 não é exposta publicamente. Para conectar via MySQL Workbench, TablePlus ou Beekeeper Studio a partir da sua máquina local, use um túnel SSH:
 
 ```bash
 ssh -L 3306:127.0.0.1:3306 usuario@ip-do-servidor
 ```
 
-Em seguida conecte na ferramenta apontando para `127.0.0.1:3306`.
+Em seguida conecte na ferramenta apontando para `127.0.0.1:3306` (a maioria das ferramentas, incluindo o Beekeeper Studio, tem suporte nativo a túnel SSH na própria tela de conexão, sem precisar rodar o comando acima manualmente).
+
+## Ambiente de desenvolvimento (Windows/WSL2)
+
+Em Windows com Docker Engine nativo dentro do WSL2 (sem Docker Desktop), a publicação em `127.0.0.1:3306:3306` do `compose.yml` — pensada para produção — impede o acesso a partir do Windows (ex: Beekeeper Studio rodando no host). Isso acontece porque o "localhost forwarding" automático do WSL2 é pouco confiável quando o processo escuta estritamente em `127.0.0.1` dentro da distro, em vez de `0.0.0.0`.
+
+A correção fica isolada em `compose.dev.yml` (publica em todas as interfaces) e só é aplicada se você ativar explicitamente — nunca em produção. No `.env` da máquina de desenvolvimento:
+
+```
+COMPOSE_FILE=compose.yml:compose.dev.yml
+```
+
+Com isso, `docker compose up -d` já mescla os dois arquivos automaticamente, e o Beekeeper Studio no Windows conecta direto em `localhost:3306`, sem túnel SSH (mesma máquina).
+
+Não é risco de segurança: a rede NAT padrão do WSL2 só é alcançável a partir da própria máquina Windows, então o efeito prático é equivalente ao loopback usado em produção.
 
 ## Configuração
 
