@@ -8,11 +8,19 @@ services:
     volumes:
       - ./data:/var/lib/mysql
       - ./my.cnf:/etc/mysql/conf.d/custom.cnf:ro
-      - ./logs:/var/log/mysql
-    expose:
-      - "3306"
+      - ./init:/docker-entrypoint-initdb.d:ro
+    ports:
+      # Bind apenas em loopback: acesso remoto só via túnel SSH (ver README).
+      - "127.0.0.1:3306:3306"
     networks:
       - infra
+    logging:
+      # Error log vai para stderr (docker logs mysql); rotação por tamanho,
+      # sem depender de logrotate/permissões no host.
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "10"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
       interval: 10s
