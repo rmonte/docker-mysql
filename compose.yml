@@ -10,8 +10,15 @@ services:
       - ./my.cnf:/etc/mysql/conf.d/custom.cnf:ro
       - ./init:/docker-entrypoint-initdb.d:ro
     ports:
+      # Sintaxe longa (com "target") é a recomendada pelo Compose Spec quando
+      # há override em compose.dev.yml: assim o merge substitui a entrada pelo
+      # "target" em vez de concatenar as duas — evita "port already in use"
+      # ao publicar a mesma porta do container duas vezes.
       # Bind apenas em loopback: acesso remoto só via túnel SSH (ver README).
-      - "127.0.0.1:3306:3306"
+      - target: 3306
+        published: "3306"
+        host_ip: 127.0.0.1
+        protocol: tcp
     networks:
       - infra
     logging:
